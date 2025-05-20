@@ -11,7 +11,7 @@ csrr t1, mtvec //storing the previous value of mtvec in a register
 la t0, exception_handler
 csrw mtvec, t0
 li t0, 0
-jr t0
+jr t0  //jumping to a innacessible instruction
 csrw mtvec, t1
 RVTEST_FAIL
 
