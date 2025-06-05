@@ -4,24 +4,30 @@
 RVTEST_RV64M
 RVTEST_CODE_BEGIN
 
-csrr t1, mtvec  //saving address stored in mtvec
-la t0, fail 
-csrw mtvec, t0 
-li t0, MSTATUS_MPP //clearing the bits specifying the privilege mode
-csrc mstatus, t0
-li t0, 0x800 
-csrs mstatus, t0  //setting the bits to go to supervisor mode
-li t0, MSTATUS_MIE
-csrs mstatus, t0
-li t0, MSTATUS_SIE 
-csrs mstatus, t0 
-li t0, 2
-csrw mideleg, t0 //delegating SSIP to supervisor mode
-csrs sstatus, t0
-csrs sie, t0  // enanbling SSIP 
-csrs sip, t0  // triggering SSIP
-la t0, supervisor_mode
-csrw mepc, t0
+MMODE_CSR_PRINTS
+csrr x6, mtvec  //saving address stored in mtvec
+la x5, fail 
+csrw mtvec, x5 
+li x5, MSTATUS_MPP //clearing the bits specifying the privilege mode
+csrc mstatus, x5
+li x5, 0x800 
+csrs mstatus, x5  //setting the bits to go to supervisor mode
+li x5, MSTATUS_MIE
+csrs mstatus, x5
+li x5, MSTATUS_SIE 
+csrs mstatus, x5 
+li x5, 2
+MMODE_CSR_PRINTS
+csrr x29, mideleg
+csrr x29, sstatus
+csrr x29, sie
+csrr x29, sip
+csrw mideleg, x5 //delegating SSIP to supervisor mode
+csrs sstatus, x5
+csrs sie, x5  // enanbling SSIP 
+csrs sip, x5  // triggering SSIP
+la x5, supervisor_mode
+csrw mepc, x5
 // Shouldn't trigger an interrupt until mret (switching to supervisor mode) is called 
 nop
 nop
@@ -30,8 +36,9 @@ nop
 nop
 nop
 nop
-la t0, pass
-csrw mtvec, t0
+la x5, pass
+csrw mtvec, x5
+MMODE_CSR_PRINTS
 mret
 
 pass:

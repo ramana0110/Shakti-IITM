@@ -5,12 +5,12 @@ RVTEST_RV64M
 RVTEST_CODE_BEGIN
 
 MMODE_CSR_PRINTS
-li x5, 0x7FFFFFC0FF800005  //bit mask for all the wpri fields of mstatus
-csrw mstatus, x5
+li x5, MSTATUS64_SD
+csrw mstatus, x5   //Trying to write SD bit which is read-only
 csrr x6, mstatus
-and x5, x6, x5  //this should result in 0 since the fields are write protected
-beqz x5, pass
 MMODE_CSR_PRINTS
+and x5, x6, x5   //Should be 0 since SD is read-only
+beqz x5, pass
 RVTEST_FAIL
 
 pass:

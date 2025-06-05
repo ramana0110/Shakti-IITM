@@ -4,6 +4,7 @@
 RVTEST_RV64M
 RVTEST_CODE_BEGIN
 
+MMODE_CSR_PRINTS
 csrr x6, mtvec  //saving address stored in mtvec
 la x5, mtvec_handler 
 csrw mtvec, x5 
@@ -13,15 +14,18 @@ li x5, 0x800
 csrs mstatus, x5 //setting mpp to switch to supervisor mode
 la x5, supervisor_mode
 csrw mepc, x5
+MMODE_CSR_PRINTS
 mret
 
 mtvec_handler:
+MMODE_CSR_PRINTS
 beqz x5, fail 
 la x5, loop1  
 slli x28, x28, 1  //left shifting to progress with bits
 addi x27, x27, -1
 beqz x27, pass //if all the 64 fields are checked it would jump to pass
 csrw mepc, x5
+MMODE_CSR_PRINTS
 mret
 
 pass:

@@ -7,50 +7,57 @@ RVTEST_CODE_BEGIN
 .option norvc
 
 #Machine mode 
-csrr t1, mtvec
-la t0, exception_handler
-csrw mtvec, t0
-li t0, MSTATUS_MPP  // loading the mpp bit mask to t0
-csrc mstatus, t0   // clearing the mpp bits of mstatus 
-li t0, 0x800  // bit to be set for supervisor mode
-csrs mstatus, t0
-li t0, MSTATUS_TVM //Storing the TVM bit position in t0
-csrc mstatus, t0 //Clear the TVM bit (Allows reading satp)
-la t0, TVM_0
-csrw mepc, t0
+MMODE_CSR_PRINTS 
+csrr x6, mtvec
+la x5, exception_handler
+csrw mtvec, x5
+li x5, MSTATUS_MPP  // loading the mpp bit mask to t0
+csrc mstatus, x5   // clearing the mpp bits of mstatus 
+li x5, 0x800  // bit to be set for supervisor mode
+csrs mstatus, x5
+li x5, MSTATUS_TVM //Storing the TVM bit position in t0
+csrc mstatus, x5 //Clear the TVM bit (Allows reading satp)
+la x5, TVM_0
+csrw mepc, x5
+MMODE_CSR_PRINTS
 mret  // switches to supervisor mode
-csrw mtvec, t1 //restoring mtvec
+csrw mtvec, x6 //restoring mtvec
 RVTEST_FAIL
 
 #Supervisor mode
 TVM_0:
-csrr t0, satp //Reading satp when TVM = 0 (Should read)
+csrr x29, sstatus
+csrr x5, satp //Reading satp when TVM = 0 (Should read)
 ecall
-csrw mtvec, t1 //restoring mtvec
+csrw mtvec, x6 //restoring mtvec
 RVTEST_FAIL
 
 #Supervisor mode
 TVM_1:
-csrr t0, satp //Reading satp when TVM = 1 (Throws an exception)
-csrw mtvec, t1 //restoring mtvec
+csrr x29, sstatus
+csrr x5, satp //Reading satp when TVM = 1 (Throws an exception)
+csrw mtvec, x6 //restoring mtvec
 RVTEST_FAIL
 
 #Machine mode
 exception_handler:
-li t0, MSTATUS_MPP  // loading the mpp bit mask to t0
-csrc mstatus, t0   // clearing the mpp bits of mstatus 
-li t0, 0x800  // bit to be set for supervisor mode
-csrs mstatus, t0
-li t0, MSTATUS_TVM //Storing the TVM bit position in t0
-csrs mstatus, t0 //Set the TVM bit (Doesn't allow reading satp)
-la t0, TVM_1
-csrw mepc, t0
-la t0, correct_exception
-csrw mtvec, t0
+MMODE_CSR_PRINTS
+li x5, MSTATUS_MPP  // loading the mpp bit mask to t0
+csrc mstatus, x5   // clearing the mpp bits of mstatus 
+li x5, 0x800  // bit to be set for supervisor mode
+csrs mstatus, x5
+li x5, MSTATUS_TVM //Storing the TVM bit position in t0
+csrs mstatus, x5 //Set the TVM bit (Doesn't allow reading satp)
+la x5, TVM_1
+csrw mepc, x5
+la x5, correct_exception
+csrw mtvec, x5
+MMODE_CSR_PRINTS
 mret
 
 correct_exception:
-csrw mtvec, t1 //restoring mtvec
+MMODE_CSR_PRINTS
+csrw mtvec, x6 //restoring mtvec
 RVTEST_PASS
 
 RVTEST_CODE_END

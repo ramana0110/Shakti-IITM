@@ -5,17 +5,18 @@ RVTEST_RV64M
 RVTEST_CODE_BEGIN
 
 MMODE_CSR_PRINTS
-li x5, 0x7FFFFFC0FF800005  //bit mask for all the wpri fields of mstatus
-csrw mstatus, x5
-csrr x6, mstatus
-and x5, x6, x5  //this should result in 0 since the fields are write protected
-beqz x5, pass
+li x5, MSTATUS_FS
+csrw mstatus, x5  //Dirtying FS bits
+li x5, MSTATUS64_SD
+csrr x6, mstatus //Should set SD bit of the mstatus register
+and x5, x5, x6
 MMODE_CSR_PRINTS
+bnez x5, pass
+
 RVTEST_FAIL
 
 pass:
 RVTEST_PASS
-
 RVTEST_CODE_END
 
   .data

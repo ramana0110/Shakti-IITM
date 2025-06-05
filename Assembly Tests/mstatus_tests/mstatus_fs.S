@@ -10,10 +10,12 @@
 RVTEST_RV64MF
 RVTEST_CODE_BEGIN
 
-TEST_FP_OP2_S( 2,  fadd.s, 0, 3.5, 2.5, 1.0 );
-csrr x5, mstatus
-li x6, MSTATUS_FS
+MMODE_CSR_PRINTS
+TEST_FP_OP2_S( 2,  fadd.s, 0, 3.5, 2.5, 1.0 );  //Trying a FP operation
+csrr x5, mstatus  // This should set the FS bits to dirty
+li x6, MSTATUS_FS  
 and x5, x5, x6
+MMODE_CSR_PRINTS
 beq x6, x5, pass
 RVTEST_FAIL
 

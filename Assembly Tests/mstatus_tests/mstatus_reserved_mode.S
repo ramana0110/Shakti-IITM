@@ -4,6 +4,7 @@
 RVTEST_RV64M
 RVTEST_CODE_BEGIN
 
+MMODE_CSR_PRINTS
 csrr x6, mtvec  //saving address stored in mtvec
 la x5, pass 
 csrw mtvec, x5 
@@ -12,13 +13,15 @@ csrc mstatus, x5
 li x5, 0x1000  // setting mpp to 10 which is reserved 
 csrs mstatus, x5
 la x5, reserved_mode  
-csrw mepc, x5  
+csrw mepc, x5
+MMODE_CSR_PRINTS  
 mret  //jumps to the reserved mode
 csrw mtvec, x6
 RVTEST_FAIL
 
 
 pass:
+MMODE_CSR_PRINTS
 csrw mtvec, x6
 RVTEST_PASS
 
