@@ -1,7 +1,7 @@
 # Steps to run a assembly test
 Clone the repo and run
    ```
-   cd Shakti-IITM/AssemblyTest/
+   cd Shakti-IITM/AssemblyTests/
    ```
 To get the disass and run the elf on spike
    ```
